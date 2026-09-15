@@ -41,8 +41,11 @@ This repository is intended to be published from the `Sh1kal.github.io` GitHub P
 
 1. Push the project to `https://github.com/Sh1kal/Sh1kal.github.io`.
 2. In GitHub, open **Settings > Pages**.
-3. Set the source to the branch that contains the built site workflow or deploy the generated `dist` folder through your preferred GitHub Pages process.
-4. Run `pnpm run build` before publishing to confirm the production bundle is valid.
+3. Set **Build and deployment > Source** to **GitHub Actions**.
+4. Run the **Deploy to GitHub Pages** workflow, or push to `main` / `master`.
+5. Run `pnpm run build` before publishing to confirm the production bundle is valid.
+
+If the live site is blank and the page source contains `/src/main.jsx`, GitHub Pages is serving the source checkout instead of the Vite production build. Switch the Pages source to **GitHub Actions** so the workflow deploys the generated `dist` artifact.
 
 ## Editing Personal Information
 
