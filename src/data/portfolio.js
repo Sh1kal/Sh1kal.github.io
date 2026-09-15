@@ -436,7 +436,7 @@ export const education = [
     school: 'TEK-UP University',
     period: 'Dec 2024 – Present',
     location: 'Tunisia',
-    status: 'Current',
+    status: 'Expected graduation: 2027',
     focus: 'Cybersecurity Engineering',
   },
   {

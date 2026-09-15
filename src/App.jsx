@@ -326,8 +326,10 @@ function App() {
   const [activeToolCategory, setActiveToolCategory] = useState(toolkitCategories[0])
   const [certificationFilter, setCertificationFilter] = useState('All')
   const [openExperience, setOpenExperience] = useState(null)
+  const [cvMenuOpen, setCvMenuOpen] = useState(false)
   const [profileOpen, setProfileOpen] = useState(false)
   const [selectedCertification, setSelectedCertification] = useState(null)
+  const cvMenuRef = useRef(null)
 
   const activeTools = useMemo(
     () => toolkit.filter((tool) => tool.category === activeToolCategory),
@@ -424,14 +426,27 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (!selectedCertification && !profileOpen) return undefined
+    if (!selectedCertification && !profileOpen && !cvMenuOpen) return undefined
     const close = (event) => {
       if (event.key === 'Escape') setSelectedCertification(null)
       if (event.key === 'Escape') setProfileOpen(false)
+      if (event.key === 'Escape') setCvMenuOpen(false)
     }
     window.addEventListener('keydown', close)
     return () => window.removeEventListener('keydown', close)
-  }, [selectedCertification, profileOpen])
+  }, [selectedCertification, profileOpen, cvMenuOpen])
+
+  useEffect(() => {
+    if (!cvMenuOpen) return undefined
+    const closeCvMenu = (event) => {
+      if (!cvMenuRef.current?.contains(event.target)) {
+        setCvMenuOpen(false)
+      }
+    }
+
+    window.addEventListener('pointerdown', closeCvMenu)
+    return () => window.removeEventListener('pointerdown', closeCvMenu)
+  }, [cvMenuOpen])
 
   return (
     <div className="site-shell">
@@ -475,10 +490,43 @@ function App() {
                 View Projects
                 <span aria-hidden="true">→</span>
               </a>
-              <a className="button" href="/Dalila_Khenine_CV.pdf" download>
-                <Icon name="download" />
-                Download CV
-              </a>
+              <div className="cv-download" ref={cvMenuRef}>
+                <button
+                  className="button"
+                  type="button"
+                  onClick={() => setCvMenuOpen((open) => !open)}
+                  aria-expanded={cvMenuOpen}
+                  aria-haspopup="menu"
+                  aria-controls="cv-download-menu"
+                >
+                  <Icon name="download" />
+                  Download CV
+                </button>
+                {cvMenuOpen ? (
+                  <div className="cv-menu" id="cv-download-menu" role="menu">
+                    <a
+                      href="/cv/Dalila_Khenine_CV_EN.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      role="menuitem"
+                      onClick={() => setCvMenuOpen(false)}
+                    >
+                      <span>EN</span>
+                      English
+                    </a>
+                    <a
+                      href="/cv/Dalila_Khenine_CV_FR.pdf"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      role="menuitem"
+                      onClick={() => setCvMenuOpen(false)}
+                    >
+                      <span>FR</span>
+                      Français
+                    </a>
+                  </div>
+                ) : null}
+              </div>
             </div>
             <div className="social-links" aria-label="Social links">
               <a href={socials.github} target="_blank" rel="noreferrer">
