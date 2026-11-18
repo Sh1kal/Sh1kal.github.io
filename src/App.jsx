@@ -12,6 +12,7 @@ import {
   toolkitCategories,
 } from './data/portfolio'
 import './App.css'
+import CloudguardianDetail, { CloudguardianFeature } from './Cloudguardian'
 
 const networkNodes = [
   [92, 274],
@@ -322,6 +323,35 @@ function CertificationCarousel({ items, onOpen }) {
 }
 
 function App() {
+  const [cloudguardianOpen, setCloudguardianOpen] = useState(() => new URLSearchParams(window.location.search).get('project') === 'cloudguardian')
+  const projectTriggerRef = useRef(null)
+  const openCloudguardian = (event) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    event.preventDefault()
+    projectTriggerRef.current = event.currentTarget
+    const url = new URL(window.location.href)
+    url.searchParams.set('project', 'cloudguardian')
+    url.hash = 'projects'
+    window.history.pushState(null, '', url)
+    setCloudguardianOpen(true)
+  }
+  const closeCloudguardian = () => {
+    const url = new URL(window.location.href)
+    url.searchParams.delete('project')
+    url.hash = 'projects'
+    window.history.replaceState(null, '', url)
+    setCloudguardianOpen(false)
+    window.requestAnimationFrame(() => {
+      const trigger = projectTriggerRef.current || document.querySelector('.featured-project')
+      trigger?.focus({ preventScroll: true })
+      trigger?.scrollIntoView({ block: 'center', behavior: 'instant' })
+    })
+  }
+  useEffect(() => {
+    const syncProject = () => setCloudguardianOpen(new URLSearchParams(window.location.search).get('project') === 'cloudguardian')
+    window.addEventListener('popstate', syncProject)
+    return () => window.removeEventListener('popstate', syncProject)
+  }, [])
   const [activeSection, setActiveSection] = useState('home')
   const [activeToolCategory, setActiveToolCategory] = useState(toolkitCategories[0])
   const [certificationFilter, setCertificationFilter] = useState('All')
@@ -668,6 +698,7 @@ function App() {
         </Section>
 
         <Section id="projects" label="Projects" title="Selected work">
+          <CloudguardianFeature onOpen={openCloudguardian} />
           <div className="project-list">
             {projects.map((project) => (
               <a
@@ -810,6 +841,8 @@ function App() {
           </section>
         </div>
       ) : null}
+
+      {cloudguardianOpen ? <CloudguardianDetail onClose={closeCloudguardian} /> : null}
 
       {selectedCertification ? (
         <div className="modal-backdrop" role="presentation" onMouseDown={() => setSelectedCertification(null)}>
